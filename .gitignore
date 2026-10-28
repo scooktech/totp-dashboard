@@ -1,0 +1,72 @@
+# Node.js dependencies
+node_modules/
+.pnpm-store/
+
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+
+# Builds and generated files
+dist/
+build/
+out/
+coverage/
+
+# Caches
+.cache/
+.vite/
+.turbo/
+.eslintcache/
+.oxlint/
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+lerna-debug.log*
+
+# TypeScript
+*.tsbuildinfo
+
+# Operating system files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Editors and IDEs
+.idea/
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+!.vscode/tasks.json
+!.vscode/launch.json
+*.swp
+*.swo
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.python-version
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+env/
+ENV/
+*.egg-info/
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+
+# Playwright test results and reports
+playwright-report/
+test-results/
+blob-report/
+playwright/.cache/

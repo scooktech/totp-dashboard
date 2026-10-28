@@ -1,0 +1,52 @@
+services:
+  db:
+    image: docker.io/library/postgres:16-alpine
+    container_name: dashboard-db
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./db:/docker-entrypoint-initdb.d:Z
+      - postgres_data:/var/lib/postgresql/data:Z
+    networks:
+      - dashboard-net
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Containerfile
+    container_name: dashboard-backend
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=${PORT}
+      - NODE_ENV=production
+      - DATABASE_URL=${DATABASE_URL}
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_EXPIRES_IN=${JWT_EXPIRES_IN}
+      - TOTP_SECRET=${TOTP_SECRET}
+    depends_on:
+      - db
+    networks:
+      - dashboard-net
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Containerfile
+    container_name: dashboard-frontend
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+    networks:
+      - dashboard-net
+
+volumes:
+  postgres_data:
+
+networks:
+  dashboard-net:

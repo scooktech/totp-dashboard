@@ -1,0 +1,49 @@
+# Build stage
+FROM docker.io/library/node:24.19.0-alpine AS builder
+
+WORKDIR /app
+
+# Install pnpm and esbuild
+RUN npm install -g pnpm esbuild
+
+# Copy project configuration
+COPY package.json pnpm-lock.yaml tsconfig.json ./
+
+# Install all dependencies
+RUN pnpm install --frozen-lockfile --ignore-scripts
+
+# Copy source code
+COPY src ./src
+
+# Type-check and build the application
+RUN ./node_modules/typescript/bin/tsc --noEmit && \
+    esbuild src/index.ts \
+        --bundle \
+        --platform=node \
+        --target=node24 \
+        --outfile=dist/index.js \
+        --format=esm \
+        --packages=external
+
+# Production stage
+FROM docker.io/library/node:24.19.0-alpine
+
+WORKDIR /app
+
+# Install pnpm
+RUN npm install -g pnpm
+
+# Copy project configuration
+COPY package.json pnpm-lock.yaml ./
+
+# Install production dependencies
+RUN pnpm install --prod --frozen-lockfile --ignore-scripts
+
+# Copy the final bundle
+COPY --from=builder /app/dist ./dist
+
+EXPOSE 3000
+
+ENV NODE_ENV=production
+
+CMD ["node", "dist/index.js"]
